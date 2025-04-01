@@ -19,18 +19,20 @@ Respond to the following career question with creative, heartfelt advice. You mu
 Career question: "{question}"
 """
 
-    openai.api_key = os.getenv("GROQ_API_KEY")
-    openai.api_base = "https://api.groq.com/openai/v1"
+    client = openai.OpenAI(
+        api_key=os.getenv("GROQ_API_KEY"),
+        base_url="https://api.groq.com/openai/v1"
+    )
 
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="mixtral-8x7b",
             messages=[
                 {"role": "system", "content": "You are a poetic career adviser who references pop lyrics in serious-sounding career advice."},
                 {"role": "user", "content": prompt}
             ]
         )
-        return response["choices"][0]["message"]["content"].strip()
+        return response.choices[0].message.content.strip()
     except Exception as e:
         return f"Something went wrong: {str(e)}"
 
