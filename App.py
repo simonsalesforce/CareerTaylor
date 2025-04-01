@@ -8,19 +8,17 @@ st.markdown("<small>Today's Date: <b>1st April</b> 2025</small>", unsafe_allow_h
 st.title("💼 Career Advice Bot")
 st.subheader("Helping you define your Era")
 
-# Initialize session state
+# Session state init
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 if "new_input" not in st.session_state:
     st.session_state.new_input = None
 if "trigger_rerun" not in st.session_state:
     st.session_state.trigger_rerun = False
-if "input_box_value" not in st.session_state:
-    st.session_state.input_box_value = ""
-if "clear_chat" not in st.session_state:
-    st.session_state.clear_chat = False
+if "input_box_reset" not in st.session_state:
+    st.session_state.input_box_reset = ""
 
-# Function to get a Swiftie-flavored response
+# Swiftie LLM function
 def get_llm_response(question):
     prompt = f"""
 You are a dramatic, emotionally insightful careers adviser who responds using lyrics and references from popular Taylor Swift songs. Your audience is adults pretending to build a career tool for teenagers.
@@ -47,47 +45,45 @@ Career question: {question}
     except Exception as e:
         return f"Something went wrong: {str(e)}"
 
-# If a new input was captured from previous run, process it
+# If new question was submitted previously
 if st.session_state.new_input:
     with st.spinner("Thinking in metaphors and glitter..."):
-        response = get_llm_response(st.session_state.new_input)
-        st.session_state.chat_history.append((st.session_state.new_input, response))
+        answer = get_llm_response(st.session_state.new_input)
+        st.session_state.chat_history.append((st.session_state.new_input, answer))
     st.session_state.new_input = None
+    st.session_state.input_box_reset = ""  # Clear input for next run
 
 # Display chat history
 if st.session_state.chat_history:
     st.markdown("---")
-    for question, answer in st.session_state.chat_history:
-        st.markdown(f"**You:** {question}")
-        st.markdown(f"**Bot:** {answer}")
+    for q, a in st.session_state.chat_history:
+        st.markdown(f"**You:** {q}")
+        st.markdown(f"**Bot:** {a}")
         st.markdown("---")
 
-# Set label based on whether it's the first question
-if len(st.session_state.chat_history) == 0:
-    input_label = "What's your career question?"
-else:
-    input_label = "Ask another question:"
+# Set label based on conversation stage
+input_label = "What's your career question?" if len(st.session_state.chat_history) == 0 else "Ask another question:"
 
-# Input form at bottom
+# Form at bottom with cleared value
 with st.form("follow_up_form"):
     user_input = st.text_input(
-        input_label,
-        key="input_box_value"
+        label=input_label,
+        value=st.session_state.input_box_reset,
+        key="input_text"
     )
     submitted = st.form_submit_button("💬 Submit")
     if submitted and user_input:
         st.session_state.new_input = user_input
-        st.session_state.input_box_value = ""  # Clear text box
         st.session_state.trigger_rerun = True
 
-# Trigger rerun if flagged
+# Trigger rerun after processing
 if st.session_state.trigger_rerun:
     st.session_state.trigger_rerun = False
     st.rerun()
 
-# Optional: Clear conversation
+# Clear chat
 if st.button("🧹 Clear conversation"):
     st.session_state.chat_history = []
     st.session_state.new_input = None
-    st.session_state.input_box_value = ""
+    st.session_state.input_box_reset = ""
     st.rerun()
