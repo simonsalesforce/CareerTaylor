@@ -8,9 +8,6 @@ st.markdown("<small>Today's Date: <b>1st April</b> 2025</small>", unsafe_allow_h
 st.title("💼 Career Advice Bot")
 st.subheader("Helping you define your Era")
 
-# Example prompt
-st.markdown("_Example: 'I think I want to be a pilot' or 'I like animals'_")
-
 # Initialize session state
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
@@ -44,30 +41,27 @@ Career question: {question}
     except Exception as e:
         return f"Something went wrong: {str(e)}"
 
-# Input form to safely handle text_input
-with st.form("career_form"):
-    user_input = st.text_input("What's your career question?")
-    submitted = st.form_submit_button("💬 Ask")
-
-    if submitted and user_input:
-        with st.spinner("Thinking in metaphors and glitter..."):
-            response = get_llm_response(user_input)
-            st.session_state.chat_history.append((user_input, response))
-
-# Display chat history
+# Display chat history in order
 if st.session_state.chat_history:
     st.markdown("---")
-    st.subheader("Your Swiftie Career Advice So Far:")
     for question, answer in st.session_state.chat_history:
         st.markdown(f"**You:** {question}")
         st.markdown(f"**Bot:** {answer}")
         st.markdown("---")
 
-# Clear conversation safely
-if st.button("🧹 Clear conversation"):
-    st.session_state.clear_chat = True
+# Form to input NEXT question appears at the bottom of the page
+with st.form("follow_up_form"):
+    user_input = st.text_input("Ask another question:")
+    submitted = st.form_submit_button("💬 Submit")
 
-if st.session_state.clear_chat:
+    if submitted and user_input:
+        with st.spinner("Thinking in metaphors and glitter..."):
+            response = get_llm_response(user_input)
+            st.session_state.chat_history.append((user_input, response))
+        st.experimental_rerun()  # Refresh so new input appears above this form
+
+# Optional: Add clear chat button
+if st.button("🧹 Clear conversation"):
     st.session_state.chat_history = []
     st.session_state.clear_chat = False
     st.experimental_rerun()
