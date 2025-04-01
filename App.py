@@ -6,6 +6,7 @@ st.set_page_config(page_title="Career Chat", layout="centered")
 st.title("💼 Career Advice Bot")
 st.subheader("Now with 42% more emotional intensity than HR would recommend.")
 
+st.markdown("_Example: 'I'm stuck choosing between two jobs' or 'I want to quit my job'_")
 user_input = st.text_input("What's your career question?")
 
 responses = [
@@ -42,3 +43,5 @@ if user_input:
     st.markdown("---")
     st.subheader("Career Advice:")
     st.write(match_response(user_input))
+    if st.button("Ask Again"):
+        st.experimental_rerun()
