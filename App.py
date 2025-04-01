@@ -13,6 +13,10 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 if "clear_chat" not in st.session_state:
     st.session_state.clear_chat = False
+if "new_input" not in st.session_state:
+    st.session_state.new_input = None
+if "trigger_rerun" not in st.session_state:
+    st.session_state.trigger_rerun = False
 
 # Function to get a Swiftie-flavored response
 def get_llm_response(question):
@@ -41,7 +45,14 @@ Career question: {question}
     except Exception as e:
         return f"Something went wrong: {str(e)}"
 
-# Display chat history in order
+# If a new input was captured from previous run, process it
+if st.session_state.new_input:
+    with st.spinner("Thinking in metaphors and glitter..."):
+        response = get_llm_response(st.session_state.new_input)
+        st.session_state.chat_history.append((st.session_state.new_input, response))
+    st.session_state.new_input = None  # Clear it after processing
+
+# Show chat history
 if st.session_state.chat_history:
     st.markdown("---")
     for question, answer in st.session_state.chat_history:
@@ -49,19 +60,21 @@ if st.session_state.chat_history:
         st.markdown(f"**Bot:** {answer}")
         st.markdown("---")
 
-# Form to input NEXT question appears at the bottom of the page
+# Input form appears at bottom
 with st.form("follow_up_form"):
     user_input = st.text_input("Ask another question:")
     submitted = st.form_submit_button("💬 Submit")
-
     if submitted and user_input:
-        with st.spinner("Thinking in metaphors and glitter..."):
-            response = get_llm_response(user_input)
-            st.session_state.chat_history.append((user_input, response))
-        st.experimental_rerun()  # Refresh so new input appears above this form
+        st.session_state.new_input = user_input
+        st.session_state.trigger_rerun = True
 
-# Optional: Add clear chat button
+# Trigger safe rerun after form is fully processed
+if st.session_state.trigger_rerun:
+    st.session_state.trigger_rerun = False
+    st.rerun()
+
+# Clear conversation
 if st.button("🧹 Clear conversation"):
     st.session_state.chat_history = []
-    st.session_state.clear_chat = False
-    st.experimental_rerun()
+    st.session_state.new_input = None
+    st.rerun()
