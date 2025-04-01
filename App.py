@@ -26,7 +26,7 @@ Career question: "{question}"
 
     try:
         response = client.chat.completions.create(
-            model="mixtral-8x7b",
+            model="mistral-7b-instruct",
             messages=[
                 {"role": "system", "content": "You are a poetic career adviser who references pop lyrics in serious-sounding career advice."},
                 {"role": "user", "content": prompt}
