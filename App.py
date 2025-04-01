@@ -2,14 +2,23 @@ import streamlit as st
 import openai
 import os
 
+# Page config
 st.set_page_config(page_title="Career Chat", layout="centered")
 st.markdown("<small>Today's Date: <b>1st April</b> 2025</small>", unsafe_allow_html=True)
 st.title("💼 Career Advice Bot")
 st.subheader("Helping you define your Era")
 
+# Example prompt
 st.markdown("_Example: 'I think I want to be a pilot' or 'I like animals'_")
-user_input = st.text_input("What's your career question?")
 
+# Initialize chat history
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+# Input box
+user_input = st.text_input("What's your career question?", key="career_input")
+
+# LLM call
 def get_llm_response(question):
     prompt = f"""
 You are a dramatic, emotionally insightful careers adviser who responds using lyrics and references from popular Taylor Swift songs. Your audience is adults pretending to build a career tool for teenagers.
@@ -36,10 +45,23 @@ Career question: {question}
     except Exception as e:
         return f"Something went wrong: {str(e)}"
 
+# On submit
 if user_input:
-    st.markdown("---")
-    st.subheader("Career Advice:")
     with st.spinner("Thinking in metaphors and glitter..."):
-        st.write(get_llm_response(user_input))
-    if st.button("Ask Again"):
-        st.experimental_rerun()
+        response = get_llm_response(user_input)
+        st.session_state.chat_history.append((user_input, response))
+    st.session_state.career_input = ""  # Clear input field
+
+# Display chat history
+if st.session_state.chat_history:
+    st.markdown("---")
+    st.subheader("Your Swiftie Career Advice So Far:")
+    for question, answer in st.session_state.chat_history:
+        st.markdown(f"**You:** {question}")
+        st.markdown(f"**Bot:** {answer}")
+        st.markdown("---")
+
+# Optional: Add clear chat button
+if st.button("🧹 Clear conversation"):
+    st.session_state.chat_history = []
+    st.experimental_rerun()
