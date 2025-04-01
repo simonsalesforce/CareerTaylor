@@ -11,12 +11,14 @@ st.subheader("Helping you define your Era")
 # Initialize session state
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
-if "clear_chat" not in st.session_state:
-    st.session_state.clear_chat = False
 if "new_input" not in st.session_state:
     st.session_state.new_input = None
 if "trigger_rerun" not in st.session_state:
     st.session_state.trigger_rerun = False
+if "input_box_value" not in st.session_state:
+    st.session_state.input_box_value = ""
+if "clear_chat" not in st.session_state:
+    st.session_state.clear_chat = False
 
 # Function to get a Swiftie-flavored response
 def get_llm_response(question):
@@ -50,9 +52,9 @@ if st.session_state.new_input:
     with st.spinner("Thinking in metaphors and glitter..."):
         response = get_llm_response(st.session_state.new_input)
         st.session_state.chat_history.append((st.session_state.new_input, response))
-    st.session_state.new_input = None  # Clear it after processing
+    st.session_state.new_input = None
 
-# Show chat history
+# Display chat history
 if st.session_state.chat_history:
     st.markdown("---")
     for question, answer in st.session_state.chat_history:
@@ -60,21 +62,32 @@ if st.session_state.chat_history:
         st.markdown(f"**Bot:** {answer}")
         st.markdown("---")
 
-# Input form appears at bottom
+# Set label based on whether it's the first question
+if len(st.session_state.chat_history) == 0:
+    input_label = "What's your career question?"
+else:
+    input_label = "Ask another question:"
+
+# Input form at bottom
 with st.form("follow_up_form"):
-    user_input = st.text_input("Ask another question:")
+    user_input = st.text_input(
+        input_label,
+        key="input_box_value"
+    )
     submitted = st.form_submit_button("💬 Submit")
     if submitted and user_input:
         st.session_state.new_input = user_input
+        st.session_state.input_box_value = ""  # Clear text box
         st.session_state.trigger_rerun = True
 
-# Trigger safe rerun after form is fully processed
+# Trigger rerun if flagged
 if st.session_state.trigger_rerun:
     st.session_state.trigger_rerun = False
     st.rerun()
 
-# Clear conversation
+# Optional: Clear conversation
 if st.button("🧹 Clear conversation"):
     st.session_state.chat_history = []
     st.session_state.new_input = None
+    st.session_state.input_box_value = ""
     st.rerun()
