@@ -19,13 +19,15 @@ Respond to the following career question with creative, heartfelt advice. You mu
 Career question: "{question}"
 """
 
+    api_url = "https://api.groq.com/openai/v1/chat/completions"
+
     headers = {
         "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
         "Content-Type": "application/json"
     }
 
     data = {
-        "model": "mixtral-8x7b-32768",
+        "model": "mixtral-8x7b",
         "messages": [
             {"role": "system", "content": "You are a poetic career adviser who references pop lyrics in serious-sounding career advice."},
             {"role": "user", "content": prompt}
@@ -33,7 +35,7 @@ Career question: "{question}"
     }
 
     try:
-        response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=data)
+        response = requests.request("POST", api_url, headers=headers, json=data)
         response.raise_for_status()
         result = response.json()
         if "choices" in result and result["choices"]:
