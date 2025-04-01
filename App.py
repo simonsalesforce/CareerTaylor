@@ -11,9 +11,11 @@ st.subheader("Helping you define your Era")
 # Example prompt
 st.markdown("_Example: 'I think I want to be a pilot' or 'I like animals'_")
 
-# Initialize chat history
+# Initialize session state
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
+if "career_input" not in st.session_state:
+    st.session_state.career_input = ""
 
 # Input box
 user_input = st.text_input("What's your career question?", key="career_input")
@@ -50,7 +52,7 @@ if user_input:
     with st.spinner("Thinking in metaphors and glitter..."):
         response = get_llm_response(user_input)
         st.session_state.chat_history.append((user_input, response))
-    st.session_state.career_input = ""  # Clear input field
+    st.session_state["career_input"] = ""  # ✅ this is now safe
 
 # Display chat history
 if st.session_state.chat_history:
@@ -64,4 +66,5 @@ if st.session_state.chat_history:
 # Optional: Add clear chat button
 if st.button("🧹 Clear conversation"):
     st.session_state.chat_history = []
+    st.session_state["career_input"] = ""
     st.experimental_rerun()
