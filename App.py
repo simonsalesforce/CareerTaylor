@@ -3,7 +3,7 @@ import openai
 import os
 
 st.set_page_config(page_title="Career Chat", layout="centered")
-
+st.markdown("<small>Today's Date: <b>1st April</b> 2025</small>", unsafe_allow_html=True)
 st.title("💼 Career Advice Bot")
 st.subheader("Helping you define your Era")
 
