@@ -32,8 +32,16 @@ Career question: "{question}"
         ]
     }
 
-    response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=data)
-    return response.json()["choices"][0]["message"]["content"].strip()
+    try:
+        response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=data)
+        response.raise_for_status()
+        result = response.json()
+        if "choices" in result and result["choices"]:
+            return result["choices"][0]["message"]["content"].strip()
+        else:
+            return "Oops, I couldn't think of any advice right now. Maybe try again?"
+    except Exception as e:
+        return f"Something went wrong: {str(e)}"
 
 if user_input:
     st.markdown("---")
