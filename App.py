@@ -19,7 +19,7 @@ Respond to the following career question with creative, heartfelt advice. You mu
 Career question: "{question}"
 """
 
-    api_url = "https://api.groq.com/openai/v1/chat/completions"
+    api_url = "https://api.groq.com/v1/chat/completions"
 
     headers = {
         "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}",
