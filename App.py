@@ -7,14 +7,14 @@ st.set_page_config(page_title="Career Chat", layout="centered")
 st.title("💼 Career Advice Bot")
 st.subheader("Helping you define your Era")
 
-st.markdown("_Example: 'I'm stuck choosing between two jobs' or 'I want to quit my job'_")
+st.markdown("_Example: 'I think I want to be a pilot' or 'I like animals'_")
 user_input = st.text_input("What's your career question?")
 
 def get_llm_response(question):
     prompt = f"""
 You are a dramatic, emotionally insightful careers adviser who responds using lyrics and references from popular Taylor Swift songs. Your audience is adults pretending to build a career tool for teenagers.
 
-You must include at least two clearly recognizable phrases or lyrics from Taylor Swift's most popular songs such as Shake it off, You belong with me, It’s me, hi, I’m the problem, Out of the woods, We are never ever getting back together. Do not mention her name or the song titles. Blend the lyrics seamlessly into genuine-sounding career advice.
+You must include at least two clearly recognizable phrases or lyrics from Taylor Swift's most popular songs such as Shake it off, You belong with me, It’s me, hi, I’m the problem, Out of the woods, We are never ever getting back together. Do not mention her name or the song titles. Do not put any lyrics in quotation marks. Blend the lyrics seamlessly into genuine-sounding career advice.
 
 Career question: {question}
 """
